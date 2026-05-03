@@ -1,4 +1,5 @@
 #include "backend.h"
+#include "main.hpp"
 #include "rendervulkan.hpp"
 #include "wlserver.hpp"
 #include "vblankmanager.hpp"
@@ -1405,7 +1406,7 @@ namespace gamescope
 			wl_proxy_set_tag( (wl_proxy *)m_pSurface, &GAMESCOPE_toplevel_tag );
             m_pFrame = libdecor_decorate( m_pBackend->GetLibDecor(), m_pSurface, &s_LibDecorFrameInterface, this );
             libdecor_frame_set_title( m_pFrame, "Gamescope" );
-            libdecor_frame_set_app_id( m_pFrame, "gamescope" );
+            libdecor_frame_set_app_id( m_pFrame, g_sNestedAppId ? g_sNestedAppId : "gamescope" );
             libdecor_frame_map( m_pFrame );
         }
         else
