@@ -1591,8 +1591,21 @@ namespace gamescope
             wl_surface_set_opaque_region( m_pSurface, oState->bOpaque ? m_pBackend->GetFullRegion() : nullptr );
             wl_surface_set_buffer_scale( m_pSurface, 1 );
         }
-        else
+        else if ( m_pSubsurface )
         {
+            // We check m_pSubsurface to rule out the toplevel plane (the
+            // toplevel uses a libdecor frame, not a wl_subsurface, so its
+            // m_pSubsurface is null). Per xdg-shell, attaching a null buffer
+            // to a toplevel unmaps the surface, and remapping requires
+            // redoing the initial-commit handshake (commit without buffer →
+            // wait for configure → ack → attach). gamescope's Present path
+            // skips that dance and just attaches a buffer next frame. Mutter
+            // tolerates the out-of-spec remap but treats each cycle as a
+            // fresh window, so the host re-runs its window-to-app lookup;
+            // that lookup intermittently fails, flipping our icon to a
+            // generic placeholder.
+            // Subsurfaces are fine: a null buffer just unmaps that one
+            // layer; the parent toplevel stays mapped.
             wl_surface_attach( m_pSurface, nullptr, 0, 0 );
             wl_surface_damage( m_pSurface, 0, 0, INT32_MAX, INT32_MAX );
         }
