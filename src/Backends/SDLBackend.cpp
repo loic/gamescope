@@ -888,8 +888,9 @@ namespace gamescope
 					else if ( event.type == GetUserEventIndex( GAMESCOPE_SDL_EVENT_TITLE ) )
 					{
 						std::shared_ptr<std::string> pAppTitle = m_pApplicationTitle;
-
-						std::string szTitle = pAppTitle ? *pAppTitle : "gamescope";
+						if ( !pAppTitle )
+							continue;
+						std::string szTitle = *pAppTitle;
 						if ( g_bGrabbed )
 							szTitle += " (grabbed)";
 						SDL_SetWindowTitle( m_Connector.GetSDLWindow(), szTitle.c_str() );

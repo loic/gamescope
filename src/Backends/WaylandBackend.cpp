@@ -1241,7 +1241,14 @@ namespace gamescope
     }
     void CWaylandConnector::SetTitle( std::shared_ptr<std::string> pAppTitle )
     {
-        std::string szTitle = pAppTitle ? *pAppTitle : "gamescope";
+        // Skip null titles. steamcompmgr briefly calls SetTitle(null) when
+        // no game has a title yet (e.g. between Wine's explorer.exe spinning
+        // up and the actual game window appearing). Falling back to a literal
+        // "gamescope" causes a transient title flip that some host
+        // compositors (e.g. GNOME Shell) react to with dock placeholders.
+        if ( !pAppTitle )
+            return;
+        std::string szTitle = *pAppTitle;
         if ( g_bGrabbed )
             szTitle += " (grabbed)";
         libdecor_frame_set_title( m_Planes[0].GetFrame(), szTitle.c_str() );
