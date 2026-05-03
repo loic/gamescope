@@ -157,6 +157,9 @@ const struct option *gamescope_options = (struct option[]){
 	{ "allow-deferred-backend", no_argument, nullptr, 0 },
 	{ "keep-alive", no_argument, nullptr, 0 },
 
+	// Wayland app-id (passed to host compositor via xdg_toplevel.set_app_id / SDL_HINT_APP_ID)
+	{ "app-id", required_argument, nullptr, 0 },
+
 	{} // keep last
 };
 
@@ -222,7 +225,8 @@ const char usage[] =
 	"  -f, --fullscreen               make the window fullscreen\n"
 	"  -g, --grab                     grab the keyboard\n"
 	"  --force-grab-cursor            always use relative mouse mode instead of flipping dependent on cursor visibility.\n"
-	"  --display-index                forces gamescope to use a specific display in nested mode."
+	"  --display-index                forces gamescope to use a specific display in nested mode.\n"
+	"  --app-id                       set the Wayland app-id / X11 WM_CLASS of the gamescope window"
 	"\n"
 	"Embedded mode options:\n"
 	"  -O, --prefer-output            list of connectors in order of preference (ex: DP-1,DP-2,DP-3,HDMI-A-1)\n"
@@ -691,6 +695,7 @@ int g_nPreferredOutputWidth = 0;
 int g_nPreferredOutputHeight = 0;
 bool g_bExposeWayland = false;
 const char *g_sOutputName = nullptr;
+const char *g_sNestedAppId = nullptr;
 bool g_bDebugLayers = false;
 bool g_bForceDisableColorMgmt = false;
 bool g_bRt = false;
@@ -824,6 +829,8 @@ int main(int argc, char **argv)
 					g_bAllowDeferredBackend = true;
 				} else if (strcmp(opt_name, "keep-alive") == 0) {
 					cv_shutdown_on_primary_child_death = false;
+				} else if (strcmp(opt_name, "app-id") == 0) {
+					g_sNestedAppId = optarg;
 				} else if (strcmp(opt_name, "virtual-connector-strategy") == 0) {
 					for ( uint32_t i = 0; i < gamescope::VirtualConnectorStrategies::Count; i++ )
 					{

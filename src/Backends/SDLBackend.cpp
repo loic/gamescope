@@ -568,6 +568,8 @@ namespace gamescope
 
 		SDL_SetHint( SDL_HINT_APP_NAME, "Gamescope" );
 		SDL_SetHint( SDL_HINT_VIDEO_ALLOW_SCREENSAVER, "1" );
+		if ( g_sNestedAppId )
+			SDL_SetHint( "SDL_APP_ID", g_sNestedAppId );
 
 		if ( SDL_Init( SDL_INIT_VIDEO | SDL_INIT_EVENTS ) != 0 )
 		{
